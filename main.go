@@ -35,4 +35,25 @@ func main() {
 	for _, train := range trains {
 		fmt.Printf("%+v\n", train)
 	}
+
+	printOpts()
+}
+
+func printOpts() {
+	fmt.Printf(
+		`
+========================================================================
+READING RAILWAYS SCHEDULER
+========================================================================
+Options - (Enter the number of your selected option)
+(1) - Print full schedule
+(2) - Print station schedule
+(3) - Look up stationd id
+(4) - Look up station name
+(5) - Servie available
+(6) - Nonstop service available
+(7) - Find route (Shortest riding time)
+(8) - Find route (Shortest overall travel time)
+(9) - Exit
+`)
 }
