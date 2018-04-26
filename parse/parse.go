@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // GetStations takes in the path to a stations.dat
@@ -109,6 +110,20 @@ func NewTrain(line string) *Train {
 		DepartureTime:    data[2],
 		ArrivalTime:      data[3],
 	}
+}
+
+// GetTimeDelta will return the difference between the
+// arrival and departure times.
+func (t *Train) GetTimeDelta() (time.Duration, error) {
+	depHour, err := strconv.Atoi(t.DepartureTime[0:2])
+	depMin, err := strconv.Atoi(t.DepartureTime[3:4])
+	arrHour, err := strconv.Atoi(t.ArrivalTime[0:2])
+	arrMin, err := strconv.Atoi(t.ArrivalTime[3:4])
+
+	t1 := time.Date(1984, time.November, 3, arrHour, arrMin, 0, 0, time.UTC)
+	t2 := time.Date(1984, time.November, 3, depHour, depMin, 0, 0, time.UTC)
+
+	return t1.Sub(t2), err
 }
 
 // ReadLines parses .dat files.

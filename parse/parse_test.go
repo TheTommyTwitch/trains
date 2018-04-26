@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestGetStations(t *testing.T) {
@@ -107,4 +108,23 @@ func TestNewTrain(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+func TestGetDeltaTime(t *testing.T) {
+	t1 := "1200"
+	t2 := "1600"
+
+	train := &Train{
+		DepartureTime: t1,
+		ArrivalTime:   t2,
+	}
+
+	delta, err := train.GetTimeDelta()
+	if err != nil {
+		t.Error(err)
+	}
+	if delta != 4*time.Hour {
+		fmt.Printf("delta should be 4 hours but was: %v", delta)
+		t.Fail()
+	}
 }
