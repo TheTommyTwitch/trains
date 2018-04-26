@@ -32,9 +32,9 @@ func (c *Cli) Executer() {
 
 	switch number {
 	case 1:
-		fmt.Println("1 Not implemented")
+		c.printFullSchedule()
 	case 2:
-		fmt.Println("2 Not implemented")
+		c.printStationSchedule()
 	case 3:
 		fmt.Println("3 Not implemented")
 	case 4:
@@ -57,12 +57,30 @@ func (c *Cli) Executer() {
 
 // 1
 func (c *Cli) printFullSchedule() {
-
+	for _, train := range c.graph.GetAllTrains() {
+		dep := c.graph.GetStationByID(train.DepartureStation)
+		arr := c.graph.GetStationByID(train.ArrivalStation)
+		if dep != nil && arr != nil {
+			fmt.Printf("Train leaving %s at %s headed to %s\n", dep.Name, train.DepartureTime, arr.Name)
+		}
+	}
 }
 
 // 2
 func (c *Cli) printStationSchedule() {
+	fmt.Println("Enter station id: ")
+	station, err := readInput()
+	if err != nil {
+		return
+	}
 
+	for _, train := range c.graph.GetTrainsByStation(station) {
+		dep := c.graph.GetStationByID(train.DepartureStation)
+		arr := c.graph.GetStationByID(train.ArrivalStation)
+		if dep != nil && arr != nil {
+			fmt.Printf("Train leaving %s at %s headed to %s\n", dep.Name, train.DepartureTime, arr.Name)
+		}
+	}
 }
 
 // 3

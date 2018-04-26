@@ -26,6 +26,33 @@ func NewGraph(stations []*Station, trains []*Train) *Graph {
 	return g
 }
 
+// GetAllStations returns all stations
+func (g *Graph) GetAllStations() (s []*Station) {
+	for _, station := range g.Nodes {
+		s = append(s, station)
+	}
+	return
+}
+
+// GetAllTrains returns all trains
+func (g *Graph) GetAllTrains() (t []*Train) {
+	for _, v := range g.Edges {
+		for _, train := range v {
+			t = append(t, train)
+		}
+	}
+	return
+}
+
+// GetTrainsByStation gets trains leaving
+// a given station id.
+func (g *Graph) GetTrainsByStation(id int) (t []*Train) {
+	for _, train := range g.Edges[id] {
+		t = append(t, train)
+	}
+	return
+}
+
 // GetStationByID returns a station for the given id.
 // returns nil if not found.
 func (g *Graph) GetStationByID(id int) *Station {
