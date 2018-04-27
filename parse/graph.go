@@ -1,10 +1,16 @@
 package parse
 
+import (
+	"container/heap"
+	"errors"
+)
+
 // Graph is the structure that holds our
 // graph data.
 type Graph struct {
-	Nodes map[int]*Station
-	Edges map[int][]*Train
+	Nodes   map[int]*Station
+	Edges   map[int][]*Train
+	visited map[int]bool
 }
 
 // NewGraph makes a graph from trains and stations.
@@ -82,4 +88,97 @@ func (g *Graph) GetTrainsByID(id int) []*Train {
 	}
 
 	return nil
+}
+
+// ShortestPath algo....
+func (g *Graph) ShortestPath(src, dest int) ([]int, error) {
+	visited := make(map[int]bool)
+	dists := make(map[int]float64)
+	prev := make(map[int]int)
+
+	dists[src] = 0
+	queue := &queue{&queueItem{value: src, weight: 0, index: 0}}
+	heap.Init(queue)
+
+	for queue.Len() > 0 {
+		// Done
+		if visited[dest] {
+			break
+		}
+
+		item := heap.Pop(queue).(*queueItem)
+		n := item.value
+		for _, edge := range g.Edges[item.value] {
+			dest := edge.ArrivalStation
+			delta, _ := edge.GetTimeDelta()
+			dist := dists[n] + float64(delta)
+			if tentativeDist, ok := dists[dest]; !ok || dist < tentativeDist {
+				dists[dest] = dist
+				prev[dest] = n
+				heap.Push(queue, &queueItem{value: dest, weight: dist})
+			}
+		}
+		visited[n] = true
+	}
+
+	if !visited[dest] {
+		return nil, errors.New("no shortest path exists")
+	}
+
+	path := []int{dest}
+	for next := prev[dest]; next != 0; next = prev[next] {
+		path = append(path, next)
+	}
+
+	// Reverse path
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
+	return path, nil
+}
+
+//////////////////////////////
+// QUEUE ////////////////////
+/////////////////////////////
+type queueItem struct {
+	value  int
+	weight float64
+	index  int
+}
+
+type queue []*queueItem
+
+func (q queue) Len() int {
+	return len(q)
+}
+
+func (q queue) Less(i, j int) bool {
+	return q[i].weight < q[j].weight
+}
+
+func (q queue) Swap(i, j int) {
+	q[i], q[j] = q[j], q[i]
+	q[i].index = i
+	q[j].index = j
+}
+
+func (q *queue) Push(x interface{}) {
+	n := len(*q)
+	item := x.(*queueItem)
+	item.index = n
+	*q = append(*q, item)
+}
+
+func (q *queue) Pop() interface{} {
+	old := *q
+	n := len(old)
+	item := old[n-1]
+	item.index = -1 // for safety
+	*q = old[0 : n-1]
+	return item
+}
+
+func (q *queue) update(item *queueItem, weight float64) {
+	item.weight = weight
+	heap.Fix(q, item.index)
 }

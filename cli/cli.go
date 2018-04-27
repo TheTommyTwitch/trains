@@ -23,7 +23,7 @@ func NewCli(graph *parse.Graph) *Cli {
 
 // Executer is the execute function.
 func (c *Cli) Executer() {
-	fmt.Println("Make a selection: ")
+	fmt.Printf("Make a selection: ")
 
 	number, err := readInput()
 	if err != nil {
@@ -36,19 +36,19 @@ func (c *Cli) Executer() {
 	case 2:
 		c.printStationSchedule()
 	case 3:
-		fmt.Println("3 Not implemented")
+		c.lookupStationID()
 	case 4:
-		fmt.Println("4 Not implemented")
+		c.lookupStationName()
 	case 5:
-		fmt.Println("5 Not implemented")
+		c.serviceAvailable()
 	case 6:
-		fmt.Println("6 Not implemented")
+		c.nonstopServiceAvailable()
 	case 7:
-		fmt.Println("7 Not implemented")
+		c.findShortestRidingTime()
 	case 8:
-		fmt.Println("8 Not implemented")
+		c.findShortestTravelTime()
 	case 9:
-		fmt.Println("GoodBye...")
+		fmt.Println("GoodBye!")
 		os.Exit(0)
 	default:
 		fmt.Println("Choose 1 though 9...")
@@ -68,7 +68,7 @@ func (c *Cli) printFullSchedule() {
 
 // 2
 func (c *Cli) printStationSchedule() {
-	fmt.Println("Enter station id: ")
+	fmt.Printf("Enter station id: ")
 	station, err := readInput()
 	if err != nil {
 		return
@@ -85,32 +85,123 @@ func (c *Cli) printStationSchedule() {
 
 // 3
 func (c *Cli) lookupStationID() {
-
+	fmt.Printf("Enter station id: ")
+	id, err := readInput()
+	if err != nil {
+		return
+	}
+	station := c.graph.GetStationByID(id)
+	if station != nil {
+		fmt.Printf("The name of the station is %s.\n", station.Name)
+	} else {
+		fmt.Println("Station not found.")
+	}
 }
 
 // 4
 func (c *Cli) lookupStationName() {
-
+	fmt.Printf("Enter station name: ")
+	name, err := readStringInput()
+	if err != nil {
+		return
+	}
+	station := c.graph.GetStationByName(name)
+	if station != nil {
+		fmt.Printf("The id of the station is %v.\n", station.ID)
+	} else {
+		fmt.Println("Station not found.")
+	}
 }
 
 // 5
 func (c *Cli) serviceAvailable() {
+	fmt.Printf("Enter first station id: ")
+	firstID, err := readInput()
+	if err != nil {
+		return
+	}
 
+	fmt.Printf("Enter second station id: ")
+	secondID, err := readInput()
+	if err != nil {
+		return
+	}
+
+	stations, err := c.graph.ShortestPath(firstID, secondID)
+	if err == nil && len(stations) > 0 {
+		fmt.Println("Service is available.")
+	} else {
+		fmt.Println("Service not available.")
+	}
 }
 
 // 6
 func (c *Cli) nonstopServiceAvailable() {
+	fmt.Printf("Enter first station id: ")
+	firstID, err := readInput()
+	if err != nil {
+		return
+	}
 
+	fmt.Printf("Enter second station id: ")
+	secondID, err := readInput()
+	if err != nil {
+		return
+	}
+
+	stations, err := c.graph.ShortestPath(firstID, secondID)
+	if err == nil && len(stations) == 2 {
+		if stations[0] == firstID && stations[1] == secondID {
+			fmt.Println("Nonstop service is available.")
+		}
+	} else {
+		fmt.Println("Service not available.")
+	}
 }
 
 // 7
 func (c *Cli) findShortestRidingTime() {
+	fmt.Printf("Enter first station id: ")
+	firstID, err := readInput()
+	if err != nil {
+		return
+	}
+	firstStation := c.graph.GetStationByID(firstID)
+	if firstStation == nil {
+		fmt.Println("Station one not found.")
+		return
+	}
 
+	fmt.Printf("Enter second station id: ")
+	secondID, err := readInput()
+	if err != nil {
+		return
+	}
+	secondStation := c.graph.GetStationByID(secondID)
+	if secondStation == nil {
+		fmt.Println("Station two not found.")
+		return
+	}
+
+	stations, err := c.graph.ShortestPath(firstID, secondID)
+	if err == nil && len(stations) > 0 {
+		fmt.Printf("Path from %s to %s: \n", firstStation.Name, secondStation.Name)
+		for i, v := range stations {
+			sta := c.graph.GetStationByID(v)
+			if sta != nil {
+				fmt.Printf("%s", sta.Name)
+				if i < len(stations)-1 {
+					fmt.Printf(" -> ")
+				}
+			}
+		}
+		fmt.Println()
+	}
 }
 
 // 8
 func (c *Cli) findShortestTravelTime() {
-
+	fmt.Println("8 Not implemented")
 }
 
 func readInput() (int, error) {
@@ -128,6 +219,18 @@ func readInput() (int, error) {
 	}
 
 	return num, nil
+}
+
+func readStringInput() (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+
+	text = strings.TrimSpace(text)
+
+	return text, nil
 }
 
 // PrintOpts prints the cli options

@@ -109,3 +109,24 @@ func TestGetTrainsByID(t *testing.T) {
 		fmt.Println("trains len should be 2 but was: ", len(trains))
 	}
 }
+
+func TestShortestPath(t *testing.T) {
+	graph := getTestGraph()
+
+	correctPath := []int{1, 4, 3}
+
+	stations, err := graph.ShortestPath(1, 3)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	for k := range correctPath {
+		if correctPath[k] != stations[k] {
+			fmt.Println("Failed on key ", k)
+			t.Fail()
+		}
+	}
+
+	fmt.Println(stations)
+}
