@@ -116,9 +116,9 @@ func NewTrain(line string) *Train {
 // arrival and departure times.
 func (t *Train) GetTimeDelta() (time.Duration, error) {
 	depHour, err := strconv.Atoi(t.DepartureTime[0:2])
-	depMin, err := strconv.Atoi(t.DepartureTime[3:4])
+	depMin, err := strconv.Atoi(t.DepartureTime[2:4])
 	arrHour, err := strconv.Atoi(t.ArrivalTime[0:2])
-	arrMin, err := strconv.Atoi(t.ArrivalTime[3:4])
+	arrMin, err := strconv.Atoi(t.ArrivalTime[2:4])
 
 	t1 := time.Date(1984, time.November, 3, arrHour, arrMin, 0, 0, time.UTC)
 	t2 := time.Date(1984, time.November, 3, depHour, depMin, 0, 0, time.UTC)

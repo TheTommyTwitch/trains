@@ -66,7 +66,7 @@ Make a selection: 7
 Enter first station id: 1
 Enter second station id: 3
 Path from madison to sioux_falls: 
-madison -> fargo -> sioux_falls
+madison --- 04:40 ---> fargo --- 02:00 ---> sioux_falls   total time: 06:40
 
 Make a selection: 8
 8 Not implemented

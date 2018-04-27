@@ -90,6 +90,20 @@ func (g *Graph) GetTrainsByID(id int) []*Train {
 	return nil
 }
 
+// GetTrain gets a train by start station
+// and end station
+func (g *Graph) GetTrain(start, end int) *Train {
+	trains := g.GetAllTrains()
+	for _, tr := range trains {
+		if tr.DepartureStation == start &&
+			tr.ArrivalStation == end {
+			return tr
+		}
+	}
+
+	return nil
+}
+
 // ShortestPath algo....
 func (g *Graph) ShortestPath(src, dest int) ([]int, error) {
 	visited := make(map[int]bool)

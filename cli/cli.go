@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/thetommytwitch/trains/parse"
 )
@@ -183,6 +184,8 @@ func (c *Cli) findShortestRidingTime() {
 		return
 	}
 
+	var totalTime time.Duration
+
 	stations, err := c.graph.ShortestPath(firstID, secondID)
 	if err == nil && len(stations) > 0 {
 		fmt.Printf("Path from %s to %s: \n", firstStation.Name, secondStation.Name)
@@ -191,10 +194,16 @@ func (c *Cli) findShortestRidingTime() {
 			if sta != nil {
 				fmt.Printf("%s", sta.Name)
 				if i < len(stations)-1 {
-					fmt.Printf(" -> ")
+					tr := c.graph.GetTrain(v, stations[i+1])
+					if tr != nil {
+						delta, _ := tr.GetTimeDelta()
+						totalTime += delta
+						fmt.Printf(" --- %v ---> ", fmtDuration(delta))
+					}
 				}
 			}
 		}
+		fmt.Printf("   total time: %v", fmtDuration(totalTime))
 		fmt.Println()
 	}
 }
@@ -231,6 +240,14 @@ func readStringInput() (string, error) {
 	text = strings.TrimSpace(text)
 
 	return text, nil
+}
+
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Minute)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	return fmt.Sprintf("%02d:%02d", h, m)
 }
 
 // PrintOpts prints the cli options
