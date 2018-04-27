@@ -4,7 +4,7 @@
 
 If you have go installed:
 ```
-$ go get github.com/thetommytwitch/trains
+$ go get github.com/TheTommyTwitch/trains
 $ trains -stations=./stations.dat -trains=./trains.dat
 ```
 
